@@ -1,0 +1,233 @@
+name: DRY-RUN Popdock.Web EQA build (stokedconsulting copies, no Azure)
+
+# Orchestrator only. Source lives here because stokedconsulting Free
+# private repos reject Actions at startup (0 jobs). This public workflow
+# checks out the private copies. It does not touch eonesolutions, EQA, or prod.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+    - name: Checkout Popdock.Web
+      uses: actions/checkout@v4
+      with:
+        repository: stokedconsulting/Popdock.Web
+        ref: next-branch-test
+        token: ${{ secrets.PERSONALACCESSTOKEN }}
+        path: ./Popdock.Web
+
+    - name: Checkout eOne.Microservice.Shared
+      uses: actions/checkout@v4
+      with:
+        repository: stokedconsulting/eOne.Microservice.Shared
+        token: ${{ secrets.PERSONALACCESSTOKEN }}
+        path: ./Microservices/eOne.Microservice.Shared
+
+    - name: Checkout eOne.FileGeneratorShared
+      uses: actions/checkout@v4
+      with:
+        repository: stokedconsulting/eOne.FileGeneratorShared
+        token: ${{ secrets.PERSONALACCESSTOKEN }}
+        path: ./Microservices/eOne.FileGeneratorShared
+
+    - name: Checkout eOne.ExcelGenerator.Shared
+      uses: actions/checkout@v4
+      with:
+        repository: stokedconsulting/eOne.ExcelGenerator.Shared
+        token: ${{ secrets.PERSONALACCESSTOKEN }}
+        path: ./Microservices/eOne.ExcelGenerator.Shared
+
+    - name: Checkout Popdock.CalculatedField
+      uses: actions/checkout@v4
+      with:
+        repository: stokedconsulting/Popdock.CalculatedField
+        token: ${{ secrets.PERSONALACCESSTOKEN }}
+        path: ./Popdock.CalculatedField
+
+    - name: Checkout PopdockDatabaseAccess
+      uses: actions/checkout@v4
+      with:
+        repository: stokedconsulting/PopdockDatabaseAccess
+        token: ${{ secrets.PERSONALACCESSTOKEN }}
+        path: ./PopdockDatabaseAccess
+
+    - name: Checkout PopdockShared
+      uses: actions/checkout@v4
+      with:
+        repository: stokedconsulting/PopdockShared
+        ref: next-version
+        token: ${{ secrets.PERSONALACCESSTOKEN }}
+        path: ./PopdockShared
+
+    - name: Checkout ConnectorAuth
+      uses: actions/checkout@v4
+      with:
+        repository: stokedconsulting/ConnectorAuth
+        token: ${{ secrets.PERSONALACCESSTOKEN }}
+        path: ./ConnectorAuth
+
+    - name: Checkout Popdock.InstallService
+      uses: actions/checkout@v4
+      with:
+        repository: stokedconsulting/Popdock.InstallService
+        token: ${{ secrets.PERSONALACCESSTOKEN }}
+        path: ./Popdock.InstallService
+
+    - name: Checkout eOne.Login
+      uses: actions/checkout@v4
+      with:
+        repository: stokedconsulting/eOne.Login
+        ref: sso
+        token: ${{ secrets.PERSONALACCESSTOKEN }}
+        path: ./eOne.Login
+
+    - name: Checkout eone-ui
+      uses: actions/checkout@v4
+      with:
+        repository: stokedconsulting/eone-ui
+        token: ${{ secrets.PERSONALACCESSTOKEN }}
+        path: ./eone-ui
+
+    - name: Checkout eone-help-renderer
+      uses: actions/checkout@v4
+      with:
+        repository: stokedconsulting/eone-help-renderer
+        token: ${{ secrets.PERSONALACCESSTOKEN }}
+        path: ./eone-help-renderer
+
+    - name: Checkout eone-ai-chat
+      uses: actions/checkout@v4
+      with:
+        repository: stokedconsulting/eone-ai-chat
+        token: ${{ secrets.PERSONALACCESSTOKEN }}
+        path: ./eone-ai-chat
+
+    - name: Checkout eone-charts
+      uses: actions/checkout@v4
+      with:
+        repository: stokedconsulting/eone-charts
+        token: ${{ secrets.PERSONALACCESSTOKEN }}
+        path: ./eone-charts
+
+    - name: Checkout eone-grid
+      uses: actions/checkout@v4
+      with:
+        repository: stokedconsulting/eone-grid
+        token: ${{ secrets.PERSONALACCESSTOKEN }}
+        path: ./eone-grid
+
+    - name: Checkout popdock-shared
+      uses: actions/checkout@v4
+      with:
+        repository: stokedconsulting/popdock-shared
+        ref: next-version
+        token: ${{ secrets.PERSONALACCESSTOKEN }}
+        path: ./popdock-shared
+
+    - name: Checkout popdock-view
+      uses: actions/checkout@v4
+      with:
+        repository: stokedconsulting/popdock-view
+        token: ${{ secrets.PERSONALACCESSTOKEN }}
+        path: ./popdock-view
+
+    - name: Checkout popdock-themes
+      uses: actions/checkout@v4
+      with:
+        repository: stokedconsulting/popdock-themes
+        token: ${{ secrets.PERSONALACCESSTOKEN }}
+        path: ./popdock-themes
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: "20"
+
+    - name: NPM Install for eone-ai-chat
+      run: |
+        cd ./eone-ai-chat
+        npm install
+      shell: bash
+
+    - name: NPM Install for eone-charts
+      run: |
+        cd ./eone-charts
+        npm install
+      shell: bash
+
+    - name: NPM Install for eone-grid
+      run: |
+        cd ./eone-grid
+        npm install
+      shell: bash
+
+    - name: NPM Install for eone-ui
+      run: |
+        cd ./eone-ui
+        npm install
+      shell: bash
+
+    - name: NPM Install for eone-help-renderer
+      run: |
+        cd ./eone-help-renderer
+        npm install
+      shell: bash
+
+    - name: NPM Install for popdock-shared
+      run: |
+        cd ./popdock-shared
+        npm install
+      shell: bash
+
+    - name: NPM Install for popdock-view
+      run: |
+        cd ./popdock-view
+        npm install
+      shell: bash
+
+    - name: NPM Install for popdock-themes
+      run: |
+        cd ./popdock-themes
+        npm install
+      shell: bash
+
+    - name: NPM Install and Build
+      run: |
+        cd ./Popdock.Web/Scripts
+        npm install
+        npm run build
+      shell: bash
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: "10.0.x"
+
+    - name: Build and publish
+      run: |
+        set -e
+        dotnet build ./Popdock.Web/Popdock.Web.sln --configuration Release
+        dotnet publish ./Popdock.Web/Popdock.Web.csproj --configuration Release --output ./publish_output
+      shell: bash
+
+    - name: DRY-RUN skip Azure deploy
+      run: |
+        echo "DRY-RUN: azure/webapps-deploy skipped. No EQA/prod publish profile used."
+        test -f ./publish_output/Popdock.Web.dll
+        ls ./publish_output | head -20
+        echo "DRY-RUN ok: artifact on disk only."
+      shell: bash
+
+    - name: Upload publish_output (not a deploy)
+      uses: actions/upload-artifact@v4
+      with:
+        name: popdock-web-publish-output
+        path: ./publish_output
+        if-no-files-found: error
+        retention-days: 7
