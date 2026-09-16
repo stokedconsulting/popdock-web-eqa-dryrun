@@ -237,11 +237,3 @@ jobs:
         ls ./publish_output | head -20
         echo "DRY-RUN ok: artifact on disk only."
       shell: bash
-
-    - name: Upload publish_output (not a deploy)
-      uses: actions/upload-artifact@v4
-      with:
-        name: popdock-web-publish-output
-        path: ./publish_output
-        if-no-files-found: error
-        retention-days: 7
