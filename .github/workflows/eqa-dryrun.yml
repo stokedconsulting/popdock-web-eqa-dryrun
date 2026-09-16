@@ -225,8 +225,9 @@ jobs:
 
     - name: Build and publish
       run: |
-        set -e
-        dotnet build ./Popdock.Web/Popdock.Web.sln --configuration Release
+        # sln includes *.esproj that target .NET Framework 4.7.2 (Visual Studio JS SDK).
+        # That targeting pack exists on the original Windows 16core runner, not on macOS.
+        # Publish the web csproj so the C# graph and wwwroot are produced.
         dotnet publish ./Popdock.Web/Popdock.Web.csproj --configuration Release --output ./publish_output
       shell: bash
 
