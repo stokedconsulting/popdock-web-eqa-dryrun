@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, popdock-web-local-dryrun]
     timeout-minutes: 90
     steps:
     - name: Checkout Popdock.Web
